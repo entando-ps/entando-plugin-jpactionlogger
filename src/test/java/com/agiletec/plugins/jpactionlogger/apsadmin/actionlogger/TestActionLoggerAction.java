@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-Present Entando Inc. (http://www.entando.com) All rights reserved.
+ * Copyright 2022-Present Entando Inc. (http://www.entando.com) All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,38 +26,51 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.agiletec.plugins.jpactionlogger.apsadmin.ApsAdminPluginBaseTestCase;
 import com.agiletec.aps.util.DateConverter;
+import com.agiletec.apsadmin.ApsAdminBaseTestCase;
 
 import com.opensymphony.xwork2.Action;
 
 import org.entando.entando.aps.system.services.actionlog.ActionLoggerTestHelper;
 import org.entando.entando.aps.system.services.actionlog.IActionLogManager;
 import org.entando.entando.aps.system.services.actionlog.model.ActionLogRecord;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestActionLoggerAction extends ApsAdminPluginBaseTestCase {
+public class TestActionLoggerAction extends ApsAdminBaseTestCase {
+	
+	private IActionLogManager _actionLoggerManager;
+	private ActionLoggerTestHelper _helper;
+	
+    @BeforeEach
+	protected void init() {
+		this._actionLoggerManager = (IActionLogManager) this.getService(SystemConstants.ACTION_LOGGER_MANAGER);
+		this._helper = new ActionLoggerTestHelper(this.getApplicationContext());
+        this._helper.cleanRecords();
+	}
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.init();
+	@AfterEach
+	protected void dispose() throws Exception {
 		this._helper.cleanRecords();
 	}
 
+    @Test
 	public void testList() throws Throwable {
 		this.executeDummyAction("admin", null);
 		String result = this.executeList("admin");
-		assertEquals(Action.SUCCESS, result);
+        Assertions.assertEquals(Action.SUCCESS, result);
 		List<Integer> ids = ((ActionLoggerAction) this.getAction()).getActionRecords();
-		assertEquals(1, ids.size());
+		Assertions.assertEquals(1, ids.size());
 		ActionLogRecord record = this._actionLoggerManager.getActionRecord(ids.get(0).intValue());
-
-		assertEquals("admin", record.getUsername());
-		assertEquals("ping", record.getActionName());
-		assertEquals("/do/jpactionlogger/Test", record.getNamespace());
-		assertEquals("", record.getParameters());
+		Assertions.assertEquals("admin", record.getUsername());
+		Assertions.assertEquals("ping", record.getActionName());
+		Assertions.assertEquals("/do/jpactionlogger/Test", record.getNamespace());
+		Assertions.assertEquals("", record.getParameters());
 	}
 
+	@Test
 	public void testSearch() throws Throwable {
 		ActionLogRecord record1 = this._helper.createActionRecord(1, "username1", "actionName1", 
 				"namespace1", DateConverter.parseDate("01/01/2009 00:00", "dd/MM/yyyy HH:mm"), "params1");
@@ -71,56 +84,58 @@ public class TestActionLoggerAction extends ApsAdminPluginBaseTestCase {
 
 		Map<String, String> params = this.createSearchParams("name", "Name", "space", "arams", null, null);
 		String result = this.executeSearch("admin", params);
-		assertEquals(Action.SUCCESS, result);
+		Assertions.assertEquals(Action.SUCCESS, result);
 		List<Integer> ids = ((ActionLoggerAction) this.getAction()).getActionRecords();
 		this.compareIds(new Integer [] { 1, 2, 3 }, ids);
 
 		params = this.createSearchParams("name", "Name", "space", "arams", "03/01/2009", null);
 		result = this.executeSearch("admin", params);
-		assertEquals(Action.SUCCESS, result);
+		Assertions.assertEquals(Action.SUCCESS, result);
 		ids = ((ActionLoggerAction) this.getAction()).getActionRecords();
 		this.compareIds(new Integer [] { 3 }, ids);
 
 		params = this.createSearchParams(null, null, null, null, null, "02/01/2009");
 		result = this.executeSearch("admin", params);
-		assertEquals(Action.SUCCESS, result);
+		Assertions.assertEquals(Action.SUCCESS, result);
 		ids = ((ActionLoggerAction) this.getAction()).getActionRecords();
 		this.compareIds(new Integer [] { 1, 2 }, ids);
 
 		params = this.createSearchParams(null, "Name", null, null, "02/01/2009", "02/01/2009");
 		result = this.executeSearch("admin", params);
-		assertEquals(Action.SUCCESS, result);
+		Assertions.assertEquals(Action.SUCCESS, result);
 		ids = ((ActionLoggerAction) this.getAction()).getActionRecords();
 		this.compareIds(new Integer [] { 2 }, ids);
 	}
 
+	@Test
 	public void testSearch_2() throws Throwable {
 		Map<String, String> searchParams = this.createSearchParams("usernamePARAM", "actionNamePARAM", "namespacePARAM", "paramsPARAM", "01/01/2009", "03/01/2009");
 		//the param password must be not logged. See xml configuration
 		searchParams.put("password", "password");
 		String result = this.executeSearch("admin", searchParams);
-		assertEquals(Action.SUCCESS, result);
+		Assertions.assertEquals(Action.SUCCESS, result);
 		List<Integer> ids = ((ActionLoggerAction) this.getAction()).getActionRecords();
 		this.compareIds(new Integer [] {}, ids);
 
 		this.executeDummyAction("admin", searchParams);
 		ids = this._actionLoggerManager.getActionRecords(null);
-		assertEquals(1, ids.size());
+		Assertions.assertEquals(1, ids.size());
 		ActionLogRecord record = this._actionLoggerManager.getActionRecord(ids.get(0).intValue());
 
-		assertEquals("admin", record.getUsername());
-		assertEquals("ping", record.getActionName());
-		assertEquals("/do/jpactionlogger/Test", record.getNamespace());
+		Assertions.assertEquals("admin", record.getUsername());
+		Assertions.assertEquals("ping", record.getActionName());
+		Assertions.assertEquals("/do/jpactionlogger/Test", record.getNamespace());
 		String actionParams = record.getParameters();
-		assertTrue(actionParams.contains("username=usernamePARAM"));
-		assertTrue(actionParams.contains("actionName=actionNamePARAM"));
-		assertTrue(actionParams.contains("namespace=namespacePARAM"));
-		assertTrue(actionParams.contains("params=paramsPARAM"));
-		assertTrue(actionParams.contains("start=01/01/2009"));
-		assertTrue(actionParams.contains("end=03/01/2009"));
-		assertFalse(actionParams.contains("password"));
+		Assertions.assertTrue(actionParams.contains("username=usernamePARAM"));
+		Assertions.assertTrue(actionParams.contains("actionName=actionNamePARAM"));
+		Assertions.assertTrue(actionParams.contains("namespace=namespacePARAM"));
+		Assertions.assertTrue(actionParams.contains("params=paramsPARAM"));
+		Assertions.assertTrue(actionParams.contains("start=01/01/2009"));
+		Assertions.assertTrue(actionParams.contains("end=03/01/2009"));
+		Assertions.assertFalse(actionParams.contains("password"));
 	}
 
+	@Test
 	public void testDelete() throws Throwable {
 		ActionLogRecord record1 = this._helper.createActionRecord(1, "username1", "actionName1", 
 				"namespace1", DateConverter.parseDate("01/01/2009 00:00", "dd/MM/yyyy HH:mm"), "params1");
@@ -131,21 +146,21 @@ public class TestActionLoggerAction extends ApsAdminPluginBaseTestCase {
 		this._helper.addActionRecord(record1);
 		this._helper.addActionRecord(record2);
 		this._helper.addActionRecord(record3);
-		assertNotNull(this._actionLoggerManager.getActionRecord(record1.getId()));
-		assertNotNull(this._actionLoggerManager.getActionRecord(record2.getId()));
-		assertNotNull(this._actionLoggerManager.getActionRecord(record3.getId()));
+		Assertions.assertNotNull(this._actionLoggerManager.getActionRecord(record1.getId()));
+		Assertions.assertNotNull(this._actionLoggerManager.getActionRecord(record2.getId()));
+		Assertions.assertNotNull(this._actionLoggerManager.getActionRecord(record3.getId()));
 
 		String result = this.executeDelete("admin", record1.getId());
-		assertEquals(Action.SUCCESS, result);
-		assertNull(this._actionLoggerManager.getActionRecord(record1.getId()));
+		Assertions.assertEquals(Action.SUCCESS, result);
+		Assertions.assertNull(this._actionLoggerManager.getActionRecord(record1.getId()));
 
 		result = this.executeDelete("admin", record2.getId());
-		assertEquals(Action.SUCCESS, result);
-		assertNull(this._actionLoggerManager.getActionRecord(record2.getId()));
+		Assertions.assertEquals(Action.SUCCESS, result);
+		Assertions.assertNull(this._actionLoggerManager.getActionRecord(record2.getId()));
 
 		result = this.executeDelete("admin", record3.getId());
-		assertEquals(Action.SUCCESS, result);
-		assertNull(this._actionLoggerManager.getActionRecord(record3.getId()));
+		Assertions.assertEquals(Action.SUCCESS, result);
+		Assertions.assertNull(this._actionLoggerManager.getActionRecord(record3.getId()));
 	}
 
 	private String executeList(String username) throws Throwable {
@@ -183,17 +198,17 @@ public class TestActionLoggerAction extends ApsAdminPluginBaseTestCase {
 	}
 
 	private void compareIds(Integer[] expected, List<Integer> received) {
-		assertEquals(expected.length, received.size());
+		Assertions.assertEquals(expected.length, received.size());
 		for (Integer id : expected) {
 			if (!received.contains(id)) {
-				fail("Id \"" + id + "\" not found");
+				Assertions.fail("Id \"" + id + "\" not found");
 			}
 		}
 	}
 
 	private Map<String, String> createSearchParams(String username, String actionName, 
 			String namespace, String params, String start, String end) {
-		Map<String, String> searchParams = new HashMap<String, String>();
+		Map<String, String> searchParams = new HashMap<>();
 		if (username != null) {
 			searchParams.put("username", username);
 		}
@@ -214,19 +229,5 @@ public class TestActionLoggerAction extends ApsAdminPluginBaseTestCase {
 		}
 		return searchParams;
 	}
-	
-	private void init() {
-		this._actionLoggerManager = (IActionLogManager) this.getService(SystemConstants.ACTION_LOGGER_MANAGER);
-		this._helper = new ActionLoggerTestHelper(this.getApplicationContext());
-	}
-
-	@Override
-	protected void tearDown() throws Exception {
-		this._helper.cleanRecords();
-		super.tearDown();
-	}
-	
-	private IActionLogManager _actionLoggerManager;
-	private ActionLoggerTestHelper _helper;
 	
 }

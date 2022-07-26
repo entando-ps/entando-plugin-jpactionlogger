@@ -1,0 +1,20 @@
+----------------------------------------------------------------
+Tue Jul 26 10:28:23 CEST 2022:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.9.1.0 - (1344872): instance a816c00e-0182-399f-084b-00003a93a338 
+on database directory /media/eu/Volume/projects/github-ps/entando-plugin-jpactionlogger/target/test/db/entando-plugin-jpactionloggertestPort  with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@3d4eac69 
+Loaded from file:/home/eu/.m2/repository/org/apache/derby/derby/10.9.1.0/derby-10.9.1.0.jar
+java.vendor=Private Build
+java.runtime.version=11.0.15+10-Ubuntu-0ubuntu0.20.04.1
+user.dir=/media/eu/Volume/projects/github-ps/entando-plugin-jpactionlogger
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Tue Jul 26 10:28:25 CEST 2022:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.9.1.0 - (1344872): instance 120fc126-0182-399f-084b-00003a93a338 
+on database directory /media/eu/Volume/projects/github-ps/entando-plugin-jpactionlogger/target/test/db/entando-plugin-jpactionloggertestServ  with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@3d4eac69 
+Loaded from file:/home/eu/.m2/repository/org/apache/derby/derby/10.9.1.0/derby-10.9.1.0.jar
+java.vendor=Private Build
+java.runtime.version=11.0.15+10-Ubuntu-0ubuntu0.20.04.1
+user.dir=/media/eu/Volume/projects/github-ps/entando-plugin-jpactionlogger
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''

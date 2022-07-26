@@ -1,32 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component>
-	<code>jpactionlogger</code>
-	<description>Action Logger</description>
-	<artifact>
-		<artifactId>${project.artifactId}</artifactId>
-		<groupId>${project.groupId}</groupId>
-		<version>${project.version}</version>
-	</artifact>
-	<installation>
-		<environment code="production">
-			<defaultSqlResources>
-				<datasource name="portDataSource">
-classpath:sql/plugins/jpactionlogger/port_data_production.sql
-				</datasource>
-				<datasource name="servDataSource">
-classpath:sql/plugins/jpactionlogger/serv_data_production.sql
-				</datasource>
-			</defaultSqlResources>
-		</environment>
-		<environment code="test">
-			<defaultSqlResources>
-				<datasource name="portDataSource">
-classpath:sql/plugins/jpactionlogger/port_data_test.sql
-				</datasource>
-				<datasource name="servDataSource">
-classpath:sql/plugins/jpactionlogger/serv_data_test.sql
-				</datasource>
-			</defaultSqlResources>
-		</environment>
-	</installation>
+    <code>jpactionlogger</code>
+    <description>Action Logger</description>
+    <artifact>
+        <artifactId>${project.artifactId}</artifactId>
+        <groupId>${project.groupId}</groupId>
+        <version>${project.version}</version>
+    </artifact>
 </component>
